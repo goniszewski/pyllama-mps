@@ -4,6 +4,7 @@ import torch
 import fire
 import time
 import json
+sys.path.append('../../')
 
 import gradio as gr
 
@@ -35,10 +36,11 @@ def load(
     model_args: ModelArgs = ModelArgs(max_seq_len=max_seq_len, max_batch_size=max_batch_size, **params)
     tokenizer = Tokenizer(model_path=tokenizer_path)
     model_args.vocab_size = tokenizer.n_words
-    torch.set_default_tensor_type(torch.cuda.HalfTensor)
+    torch.set_default_tensor_type(torch.HalfTensor)
     model = Transformer(model_args)
     torch.set_default_tensor_type(torch.FloatTensor)
     model.load_state_dict(checkpoint, strict=False)
+    model = model.to('mps')
     generator = LLaMA(model, tokenizer)
     return generator
 
@@ -46,9 +48,10 @@ def load(
 def process(prompt: str):
     print("Received:\n", prompt)
     prompts = [prompt]
-    results = generator.generate(
-        prompts, max_gen_len=256, temperature=temperature, top_p=top_p
-    )
+    # results = generator.generate(
+    #     prompts, max_gen_len=32, temperature=temperature, top_p=top_p
+    # )
+    results = [generator.generate([prompt], max_gen_len=128, temperature=temperature, top_p=top_p) for prompt in prompts]
     print("Generated:\n", results[0])
     return str(results[0])
 

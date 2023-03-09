@@ -27,10 +27,11 @@ def load(
     model_args: ModelArgs = ModelArgs(max_seq_len=max_seq_len, max_batch_size=max_batch_size, **params)
     tokenizer = Tokenizer(model_path=tokenizer_path)
     model_args.vocab_size = tokenizer.n_words
-    torch.set_default_tensor_type(torch.cuda.HalfTensor)
+    torch.set_default_tensor_type(torch.HalfTensor)
     model = Transformer(model_args)
     torch.set_default_tensor_type(torch.FloatTensor)
     model.load_state_dict(checkpoint, strict=False)
+    model = model.to('mps')
     generator = LLaMA(model, tokenizer)
     return generator
 
@@ -50,9 +51,9 @@ def run(
         "I believe the meaning of life is", # removed: keep only one prompt
     ]
     print("Prompt:", prompts)
-    results = generator.generate(prompts, max_gen_len=256, temperature=temperature, top_p=top_p)
+    results = [generator.generate([prompt], max_gen_len=32, temperature=temperature, top_p=top_p) for prompt in prompts]
     for result in results:
-        print("🦙LLaMA:", result.strip())
+        print("🦙LLaMA:", result)
 
 def get_args():
     import argparse
