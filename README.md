@@ -5,7 +5,12 @@
 
 > 🔥 In order to download the checkpoints and tokenizer, use this BitTorrent link: "[magnet:?xt=urn:btih:ZXXDAUWYLRUXXBHUYEMS6Q5CE5WA3LVA&dn=LLaMA](magnet:?xt=urn:btih:ZXXDAUWYLRUXXBHUYEMS6Q5CE5WA3LVA&dn=LLaMA)".
 
-## Setup
+
+## Setup (this fork)
+
+In `pyllama-mps/` run `pip install -r requirements.txt`
+
+## Setup (original)
 
 In a conda env with pytorch / cuda available, run
 ```
